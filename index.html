@@ -724,10 +724,13 @@ function renderHome(){
     <button class="cta" data-a="daily">${q>=GOAL?'もう1セットやる':'今日の10問をはじめる'}</button>
   </section>
   <section class="card"><h3>📝 テスト形式（本番と同じ）</h3>
-    <div class="sub2">定期テストと同じ選択肢（ア〜ト・各20か国）と問題数（14問）。</div>
-    <button class="cta" style="margin-top:6px" data-a="mock">模擬テスト（問1＋問2　全14問）</button>
+    <div class="sub2">白地図の番号にあてはまる国名を、ア〜トの選択肢から選ぶ。テストの範囲は毎回変わるから、世界じゅうの国から出すよ。</div>
+    <div class="lbl">出題する国</div>
+    <div class="seg"><button class="${S.testScope==='all'?'':'on'}" data-a="tscope" data-v="lv1">主要国（テストに出そうな国）</button><button class="${S.testScope==='all'?'on':''}" data-a="tscope" data-v="all">すべての国</button></div>
+    <button class="cta" style="margin-top:2px" data-a="mock">模擬テスト（問1＋問2　全14問）</button>
     <div class="duo"><button class="cta sub" data-a="part1">問1だけ<small>アフリカ・ヨーロッパ</small></button><button class="cta sub" data-a="part2">問2だけ<small>南北アメリカ・アジア</small></button></div>
-    <button class="cta sub" style="margin-top:8px;font-size:13px;padding:10px" data-a="mockWide">範囲ひろげ版（世界の主要国から出す）</button>
+    <button class="cta sub" style="margin-top:8px" data-a="mixAll">世界ぜんぶミックス（9問）<small style="display:block;font-weight:600;font-size:11px">6大陸から出る。オセアニアも入るよ</small></button>
+    <button class="cta sub" style="margin-top:8px;font-size:13px;padding:10px" data-a="mockPast">過去問どおり（前回の定期テストの範囲）</button>
   </section>
   <section class="card"><h3>🗺️ 大陸ごとに練習</h3>
     <div class="sub2">どの大陸が出るか分からないから、全部の大陸をカバーしよう。<br>▶でその大陸のテスト形式（6問）／大陸名をタップで地図を拡大／緑＝マスター・黄＝練習中</div>${rows}</section>
@@ -877,22 +880,25 @@ const BANK1=['アルジェリア','ナイジェリア','マダガスカル','エ
 const BANK2=['アルゼンチン','チリ','ブラジル','ベネズエラ','ペルー','コロンビア','アメリカ合衆国','カナダ','メキシコ','キューバ','タイ','中国','イラン','サウジアラビア','インド','インドネシア','モンゴル','イラク','フィリピン','トルコ'];
 const byName=new Map(countries.map(c=>[c.name,c]));
 const PARTS={
-  p1:{title:'問1　アフリカとヨーロッパ',regions:[['アフリカ',2],['ヨーロッパ',4]],bank:20,names:BANK1},
-  p2:{title:'問2　南アメリカ・北アメリカ・アジア',regions:[['南アメリカ',2],['北アメリカ',2],['アジア',4]],bank:20,names:BANK2},
-  w1:{title:'問1　アフリカとヨーロッパ（範囲ひろげ）',regions:[['アフリカ',2],['ヨーロッパ',4]],bank:20},
-  w2:{title:'問2　南北アメリカ・アジア（範囲ひろげ）',regions:[['南アメリカ',2],['北アメリカ',2],['アジア',4]],bank:20}
+  /* 過去問どおり（前回の定期テストの範囲） */
+  p1:{title:'問1　アフリカとヨーロッパ（前回の範囲）',regions:[['アフリカ',2],['ヨーロッパ',4]],bank:20,names:BANK1},
+  p2:{title:'問2　南北アメリカ・アジア（前回の範囲）',regions:[['南アメリカ',2],['北アメリカ',2],['アジア',4]],bank:20,names:BANK2},
+  /* 標準：世界じゅうの国から出す（範囲は「主要国」か「すべての国」を選べる） */
+  w1:{title:'問1　アフリカとヨーロッパ',regions:[['アフリカ',2],['ヨーロッパ',4]],bank:20},
+  w2:{title:'問2　南北アメリカ・アジア',regions:[['南アメリカ',2],['北アメリカ',2],['アジア',4]],bank:20},
+  w3:{title:'世界ぜんぶミックス',regions:[['アフリカ',2],['ヨーロッパ',2],['アジア',2],['北アメリカ',1],['南アメリカ',1],['オセアニア',1]],bank:20}
 };
 function buildPart(spec){
   const targets=[],tid=new Set();
   const fixed=spec.names?spec.names.map(n=>byName.get(n)).filter(c=>c&&availSet.has(c.id)):null;
   for(const [r,n] of spec.regions){
-    let pool=fixed?fixed.filter(c=>c.region===r&&!NOT_TARGET.has(c.id)):poolFor(r,'lv1').filter(c=>!NOT_TARGET.has(c.id));
+    let pool=fixed?fixed.filter(c=>c.region===r&&!NOT_TARGET.has(c.id)):poolFor(r,S.testScope==='all'?'all':'lv1').filter(c=>!NOT_TARGET.has(c.id));
     if(!fixed&&pool.length<n)pool=poolFor(r,'all').filter(c=>!NOT_TARGET.has(c.id));
     pickN(pool,n).forEach(c=>{targets.push(c);tid.add(c.id);});
   }
   const regs=spec.regions.map(x=>x[0]);
   const cand=avail.filter(c=>regs.includes(c.region)&&!tid.has(c.id));
-  const extra=shuffle(cand.filter(c=>c.lv===1)).concat(shuffle(cand.filter(c=>c.lv!==1))).slice(0,Math.max(0,spec.bank-targets.length));
+  const extra=(S.testScope==='all'?shuffle(cand):shuffle(cand.filter(c=>c.lv===1)).concat(shuffle(cand.filter(c=>c.lv!==1)))).slice(0,Math.max(0,spec.bank-targets.length));
   const bank=fixed?fixed:shuffle(targets.concat(extra)).sort((a,b)=>regs.indexOf(a.region)-regs.indexOf(b.region));
   return{spec,regs,view:regs[0],active:0,done:false,
     items:targets.map((c,i)=>({n:i+1,c,region:c.region,ans:null,ok:null})),
@@ -1027,11 +1033,13 @@ const ACT={
   weakGo:()=>{S.set.scope='weak';S.set.region='all';startFree();},
   regionView:v=>setView(v),
   regionGo:v=>startTest([{title:v,regions:[[v,6]],bank:20}]),
-  mock:()=>startTest([PARTS.p1,PARTS.p2]),
-  mockWide:()=>startTest([PARTS.w1,PARTS.w2]),
+  mock:()=>startTest([PARTS.w1,PARTS.w2]),
+  mockPast:()=>startTest([PARTS.p1,PARTS.p2]),
+  mixAll:()=>startTest([PARTS.w3]),
+  tscope:v=>{S.testScope=v;persist();renderHome();},
   hint:()=>{S.hint=!(S.hint!==false);persist();paintPart(T.parts[T.pi]);renderTest();},
-  part1:()=>startTest([PARTS.p1]),
-  part2:()=>startTest([PARTS.p2]),
+  part1:()=>startTest([PARTS.w1]),
+  part2:()=>startTest([PARTS.w2]),
   tview:v=>{const P=T.parts[T.pi];P.view=v;setView(v);renderTest();},
   slot:v=>selectSlot(+v),
   chip:v=>pickChip(v),
