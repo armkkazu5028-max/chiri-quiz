@@ -185,6 +185,7 @@ svg{width:100%;height:100%;display:block;touch-action:none;user-select:none;-web
 .rl{padding:8px 12px;border-radius:12px;margin-bottom:6px;font-weight:700;font-size:14px;line-height:1.5}
 .rl.ok{background:var(--ok-bg)}
 .rl.ng{background:var(--ng-bg)}
+.hintbtn{font-size:12px;font-weight:700;color:var(--sub);background:var(--panel);border-radius:999px;padding:5px 12px;margin:0 0 4px;border:2px solid var(--line)}
 .sub2{color:var(--sub);font-size:12px;line-height:1.5;margin:-4px 0 4px}
 @media (min-width:600px){#mapwrap{flex-basis:40%}.quiz #mapwrap,.result #mapwrap{flex-basis:52%}}
 </style>
@@ -723,9 +724,10 @@ function renderHome(){
     <button class="cta" data-a="daily">${q>=GOAL?'もう1セットやる':'今日の10問をはじめる'}</button>
   </section>
   <section class="card"><h3>📝 テスト形式（本番と同じ）</h3>
-    <div class="sub2">白地図の番号にあてはまる国名を、ア〜トの選択肢から選ぶ形式。</div>
+    <div class="sub2">定期テストと同じ選択肢（ア〜ト・各20か国）と問題数（14問）。</div>
     <button class="cta" style="margin-top:6px" data-a="mock">模擬テスト（問1＋問2　全14問）</button>
     <div class="duo"><button class="cta sub" data-a="part1">問1だけ<small>アフリカ・ヨーロッパ</small></button><button class="cta sub" data-a="part2">問2だけ<small>南北アメリカ・アジア</small></button></div>
+    <button class="cta sub" style="margin-top:8px;font-size:13px;padding:10px" data-a="mockWide">範囲ひろげ版（世界の主要国から出す）</button>
   </section>
   <section class="card"><h3>🗺️ 大陸ごとに練習</h3>
     <div class="sub2">どの大陸が出るか分からないから、全部の大陸をカバーしよう。<br>▶でその大陸のテスト形式（6問）／大陸名をタップで地図を拡大／緑＝マスター・黄＝練習中</div>${rows}</section>
@@ -870,21 +872,28 @@ function showResult(){
 const CIRC='①②③④⑤⑥⑦⑧⑨⑩';
 const KANA='アイウエオカキクケコサシスセソタチツテト';
 const NOT_TARGET=new Set(['643','702','376']);   // ロシア・シンガポール・イスラエルは番号を打ちにくいので除外
+/* 定期テストの選択肢（ア〜ト）そのまま。この順番・この20か国が本番の範囲 */
+const BANK1=['アルジェリア','ナイジェリア','マダガスカル','エジプト','南アフリカ共和国','タンザニア','イギリス','フランス','ドイツ','オーストリア','ノルウェー','ポーランド','フィンランド','スペイン','ポルトガル','ウクライナ','ギリシャ','ルーマニア','オランダ','チェコ'];
+const BANK2=['アルゼンチン','チリ','ブラジル','ベネズエラ','ペルー','コロンビア','アメリカ合衆国','カナダ','メキシコ','キューバ','タイ','中国','イラン','サウジアラビア','インド','インドネシア','モンゴル','イラク','フィリピン','トルコ'];
+const byName=new Map(countries.map(c=>[c.name,c]));
 const PARTS={
-  p1:{title:'問1　アフリカとヨーロッパ',regions:[['アフリカ',2],['ヨーロッパ',4]],bank:20},
-  p2:{title:'問2　南アメリカ・北アメリカ・アジア',regions:[['南アメリカ',2],['北アメリカ',2],['アジア',4]],bank:20}
+  p1:{title:'問1　アフリカとヨーロッパ',regions:[['アフリカ',2],['ヨーロッパ',4]],bank:20,names:BANK1},
+  p2:{title:'問2　南アメリカ・北アメリカ・アジア',regions:[['南アメリカ',2],['北アメリカ',2],['アジア',4]],bank:20,names:BANK2},
+  w1:{title:'問1　アフリカとヨーロッパ（範囲ひろげ）',regions:[['アフリカ',2],['ヨーロッパ',4]],bank:20},
+  w2:{title:'問2　南北アメリカ・アジア（範囲ひろげ）',regions:[['南アメリカ',2],['北アメリカ',2],['アジア',4]],bank:20}
 };
 function buildPart(spec){
   const targets=[],tid=new Set();
+  const fixed=spec.names?spec.names.map(n=>byName.get(n)).filter(c=>c&&availSet.has(c.id)):null;
   for(const [r,n] of spec.regions){
-    let pool=poolFor(r,'lv1').filter(c=>!NOT_TARGET.has(c.id));
-    if(pool.length<n)pool=poolFor(r,'all').filter(c=>!NOT_TARGET.has(c.id));
+    let pool=fixed?fixed.filter(c=>c.region===r&&!NOT_TARGET.has(c.id)):poolFor(r,'lv1').filter(c=>!NOT_TARGET.has(c.id));
+    if(!fixed&&pool.length<n)pool=poolFor(r,'all').filter(c=>!NOT_TARGET.has(c.id));
     pickN(pool,n).forEach(c=>{targets.push(c);tid.add(c.id);});
   }
   const regs=spec.regions.map(x=>x[0]);
   const cand=avail.filter(c=>regs.includes(c.region)&&!tid.has(c.id));
   const extra=shuffle(cand.filter(c=>c.lv===1)).concat(shuffle(cand.filter(c=>c.lv!==1))).slice(0,Math.max(0,spec.bank-targets.length));
-  const bank=shuffle(targets.concat(extra)).sort((a,b)=>regs.indexOf(a.region)-regs.indexOf(b.region));
+  const bank=fixed?fixed:shuffle(targets.concat(extra)).sort((a,b)=>regs.indexOf(a.region)-regs.indexOf(b.region));
   return{spec,regs,view:regs[0],active:0,done:false,
     items:targets.map((c,i)=>({n:i+1,c,region:c.region,ans:null,ok:null})),
     bank:bank.map((c,i)=>({c,label:KANA[i]||String(i+1)}))};
@@ -897,8 +906,15 @@ function startTest(specs){
 function showPart(){
   const P=T.parts[T.pi];
   go('test');
-  paintAll(f=>P.items.some(it=>it.c.id===fid(f))?'c tg':'c');
+  paintPart(P);
   hideRing();drawMarkers(P);setView(P.view);renderTest();
+}
+/* 出題国の色。色ヒントなしなら本番と同じ（番号だけ） */
+function paintPart(P){
+  const hint=S.hint!==false;
+  paintAll(f=>{const it=P.items.find(x=>x.c.id===fid(f));
+    if(!it)return'c';if(it.ok===true)return'c ok';if(it.ok===false)return'c ng';return hint?'c tg':'c';});
+  mkLayer.raise();
 }
 function drawMarkers(P){
   const items=P?P.items:[];
@@ -928,7 +944,7 @@ function renderTest(){
     const okN=P.items.filter(i=>i.ok).length,pct=okN/n;
     h+=masRow(pct>=.9?'star':pct>=.6?'happy':'normal',`${okN} / ${n} 問せいかい！`+(okN<n?'<br><small>赤い国をチェックして、つぎへ！</small>':' かんぺき✨'));
   }
-  h+=`<div class="tt">${P.spec.title}<br><span style="color:var(--sub);font-weight:600">地図の${n>1?'①〜'+CIRC[n-1]:'①'}にあてはまる国名を、選択肢から選ぼう。</span></div>${tabs}<div class="actbar">${pills}</div>`;
+  h+=`<div class="tt">${P.spec.title}<br><span style="color:var(--sub);font-weight:600">地図の${n>1?'①〜'+CIRC[n-1]:'①'}にあてはまる国名を、選択肢から選ぼう。</span></div>${tabs}${P.done?'':`<button class="hintbtn" data-a="hint">🎨 国の色ヒント：${S.hint!==false?'あり':'なし（本番と同じ）'}</button>`}<div class="actbar">${pills}</div>`;
   if(P.done){
     h+=P.items.map(it=>`<div class="rl ${it.ok?'ok':'ng'}">${CIRC[it.n-1]} ${it.ok?'⭕ '+it.c.name:`❌ あなた：${byId.get(it.ans).name}　→　正解：<b>${it.c.name}</b>`}</div>`).join('');
     h+=`<button class="cta" style="margin-top:10px" data-a="nextPart">${T.pi<T.parts.length-1?'次の問へ ▶':'結果を見る'}</button>`;
@@ -1012,6 +1028,8 @@ const ACT={
   regionView:v=>setView(v),
   regionGo:v=>startTest([{title:v,regions:[[v,6]],bank:20}]),
   mock:()=>startTest([PARTS.p1,PARTS.p2]),
+  mockWide:()=>startTest([PARTS.w1,PARTS.w2]),
+  hint:()=>{S.hint=!(S.hint!==false);persist();paintPart(T.parts[T.pi]);renderTest();},
   part1:()=>startTest([PARTS.p1]),
   part2:()=>startTest([PARTS.p2]),
   tview:v=>{const P=T.parts[T.pi];P.view=v;setView(v);renderTest();},
