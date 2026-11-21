@@ -187,6 +187,15 @@ svg{width:100%;height:100%;display:block;touch-action:none;user-select:none;-web
 .rl.ng{background:var(--ng-bg)}
 .hintbtn{font-size:12px;font-weight:700;color:var(--sub);background:var(--panel);border-radius:999px;padding:5px 12px;margin:0 0 4px;border:2px solid var(--line)}
 .sub2{color:var(--sub);font-size:12px;line-height:1.5;margin:-4px 0 4px}
+.rrow{width:100%;text-align:left}
+button.rrow{background:none;padding:7px 0;border-radius:10px}
+.rrow .go{display:grid;place-items:center;font-size:22px;background:none;color:var(--sub);width:auto;height:auto}
+.back{font-weight:800;font-size:14px;color:var(--accent);padding:4px 0 8px}
+h2.rt{margin:0 0 2px;font-size:22px}
+.modes.two{grid-template-columns:1fr 1fr}
+.cl{display:flex;flex-wrap:wrap;gap:6px}
+.cl button{padding:7px 11px;border-radius:999px;font-size:13px;font-weight:700;color:#1f2937}
+.cl .m0{background:var(--m0);color:var(--ink)}.cl .m1{background:var(--m1)}.cl .m2{background:var(--m2)}.cl .m3{background:var(--m3)}
 @media (min-width:600px){#mapwrap{flex-basis:40%}.quiz #mapwrap,.result #mapwrap{flex-basis:52%}}
 </style>
 </head>
@@ -215,7 +224,6 @@ svg{width:100%;height:100%;display:block;touch-action:none;user-select:none;-web
 /* ============ データ：ID(ISO数字)|国名|地域|頻出=1,その他=2 ============ */
 const DATA=`004|アフガニスタン|A|2
 031|アゼルバイジャン|A|2
-048|バーレーン|A|2
 050|バングラデシュ|A|1
 064|ブータン|A|2
 096|ブルネイ|A|2
@@ -239,7 +247,6 @@ const DATA=`004|アフガニスタン|A|2
 418|ラオス|A|1
 422|レバノン|A|2
 458|マレーシア|A|1
-462|モルディブ|A|2
 496|モンゴル|A|1
 524|ネパール|A|1
 512|オマーン|A|2
@@ -262,7 +269,6 @@ const DATA=`004|アフガニスタン|A|2
 275|パレスチナ|A|2
 158|台湾|A|2
 008|アルバニア|E|2
-020|アンドラ|E|2
 040|オーストリア|E|1
 056|ベルギー|E|1
 070|ボスニア・ヘルツェゴビナ|E|2
@@ -282,12 +288,9 @@ const DATA=`004|アフガニスタン|A|2
 372|アイルランド|E|1
 380|イタリア|E|1
 428|ラトビア|E|2
-438|リヒテンシュタイン|E|2
 440|リトアニア|E|2
 442|ルクセンブルク|E|2
-470|マルタ|E|2
 498|モルドバ|E|2
-492|モナコ|E|2
 499|モンテネグロ|E|2
 528|オランダ|E|1
 807|北マケドニア|E|2
@@ -296,7 +299,6 @@ const DATA=`004|アフガニスタン|A|2
 620|ポルトガル|E|1
 642|ルーマニア|E|1
 643|ロシア|E|1
-674|サンマリノ|E|2
 688|セルビア|E|2
 703|スロバキア|E|2
 705|スロベニア|E|2
@@ -305,18 +307,15 @@ const DATA=`004|アフガニスタン|A|2
 756|スイス|E|1
 804|ウクライナ|E|1
 826|イギリス|E|1
-336|バチカン|E|2
 012|アルジェリア|F|1
 024|アンゴラ|F|2
 204|ベナン|F|2
 072|ボツワナ|F|2
 854|ブルキナファソ|F|2
 108|ブルンジ|F|2
-132|カーボベルデ|F|2
 120|カメルーン|F|2
 140|中央アフリカ|F|2
 148|チャド|F|2
-174|コモロ|F|2
 178|コンゴ共和国|F|2
 180|コンゴ民主共和国|F|1
 384|コートジボワール|F|1
@@ -339,16 +338,13 @@ const DATA=`004|アフガニスタン|A|2
 454|マラウイ|F|2
 466|マリ|F|2
 478|モーリタニア|F|2
-480|モーリシャス|F|2
 504|モロッコ|F|1
 508|モザンビーク|F|2
 516|ナミビア|F|2
 562|ニジェール|F|2
 566|ナイジェリア|F|1
 646|ルワンダ|F|2
-678|サントメ・プリンシペ|F|2
 686|セネガル|F|2
-690|セーシェル|F|2
 694|シエラレオネ|F|2
 706|ソマリア|F|2
 710|南アフリカ共和国|F|1
@@ -361,17 +357,13 @@ const DATA=`004|アフガニスタン|A|2
 894|ザンビア|F|2
 716|ジンバブエ|F|2
 732|西サハラ|F|2
-028|アンティグア・バーブーダ|N|2
 044|バハマ|N|2
-052|バルバドス|N|2
 084|ベリーズ|N|2
 124|カナダ|N|1
 188|コスタリカ|N|2
 192|キューバ|N|1
-212|ドミニカ国|N|2
 214|ドミニカ共和国|N|2
 222|エルサルバドル|N|2
-308|グレナダ|N|2
 320|グアテマラ|N|2
 332|ハイチ|N|2
 340|ホンジュラス|N|2
@@ -379,9 +371,6 @@ const DATA=`004|アフガニスタン|A|2
 484|メキシコ|N|1
 558|ニカラグア|N|2
 591|パナマ|N|1
-659|セントクリストファー・ネービス|N|2
-662|セントルシア|N|2
-670|セントビンセント・グレナディーン|N|2
 780|トリニダード・トバゴ|N|2
 840|アメリカ合衆国|N|1
 304|グリーンランド|N|2
@@ -398,18 +387,10 @@ const DATA=`004|アフガニスタン|A|2
 858|ウルグアイ|S|2
 862|ベネズエラ|S|1
 036|オーストラリア|O|1
-242|フィジー|O|2
-296|キリバス|O|2
-584|マーシャル諸島|O|2
-583|ミクロネシア連邦|O|2
-520|ナウル|O|2
+242|フィジー|O|1
 554|ニュージーランド|O|1
-585|パラオ|O|2
-598|パプアニューギニア|O|2
-882|サモア|O|2
+598|パプアニューギニア|O|1
 090|ソロモン諸島|O|2
-776|トンガ|O|2
-798|ツバル|O|2
 548|バヌアツ|O|2`;
 const RN={A:'アジア',E:'ヨーロッパ',F:'アフリカ',N:'北アメリカ',S:'南アメリカ',O:'オセアニア'};
 const REGIONS=Object.values(RN);
@@ -437,7 +418,7 @@ const isWeak=id=>{const s=S.stats[id];return !!s&&s.ng>0&&s.streak<3;};
 function record(c,ok){const s=S.stats[c.id]||(S.stats[c.id]={ok:0,ng:0,streak:0});if(ok){s.ok++;s.streak++;}else{s.ng++;s.streak=0;}}
 
 /* ============ 地図 ============ */
-const features=topojson.feature(TOPO,TOPO.objects.countries).features.filter(f=>f.id!=='010');
+const features=topojson.feature(TOPO,TOPO.objects.countries).features.filter(f=>f.id!=='010'&&f.properties.name!=='Ashmore and Cartier Is.');   // 南極と、オーストラリアと同じ国コードを持つ小島は除く
 const fid=f=>f.id==null?'':String(f.id).padStart(3,'0');
 const mapIds=new Set(features.map(fid));
 const avail=countries.filter(c=>mapIds.has(c.id));
@@ -527,7 +508,7 @@ function smartPool(region){return poolFor(region,'all');}
 function balancedPick(n){
   const ratio=r=>{const p=regionProgress(r);return p.g/p.total;};
   const out=[],used=new Set();
-  const take=r=>{const c=pickN(poolFor(r,'all').filter(x=>!used.has(x.id)),1)[0];if(c){used.add(c.id);out.push(c);}};
+  const take=r=>{let l=poolFor(r,scopeKey()).filter(x=>!used.has(x.id));if(!l.length)l=poolFor(r,'all').filter(x=>!used.has(x.id));const c=pickN(l,1)[0];if(c){used.add(c.id);out.push(c);}};
   shuffle(REGIONS).slice(0,n).forEach(take);
   while(out.length<n){
     const ws=REGIONS.map(r=>Math.max(.15,1.2-ratio(r)));let x=Math.random()*ws.reduce((a,b)=>a+b,0),i=0;
@@ -536,8 +517,9 @@ function balancedPick(n){
   }
   return shuffle(out);
 }
+function scopeKey(){return S.testScope==='all'?'all':'lv1';}
 function regionProgress(r){
-  const l=avail.filter(c=>c.region===r);let g=0,y=0;
+  const l=poolFor(r,scopeKey());let g=0,y=0;
   for(const c of l){const v=level(c.id);if(v===3)g++;else if(v>0)y++;}
   return{total:l.length,g,y};
 }
@@ -702,19 +684,23 @@ function paintHome(){
   paintAll(f=>{const id=fid(f);if(!availSet.has(id))return'c unk';return'c m'+level(id)+(id===selId?' sel':'');});
   if(selId)paintId(selId,'m'+level(selId)+' sel');
 }
-function renderHome(){
+let homeRegion=null;   // 開いている州（nullなら州いちらん）
+function scopeSeg(){
+  return`<div class="seg"><button class="${scopeKey()==='lv1'?'on':''}" data-a="tscope" data-v="lv1">主要国（テストに出そうな国）</button><button class="${scopeKey()==='all'?'on':''}" data-a="tscope" data-v="all">すべての国</button></div>`;
+}
+function renderHome(){if(homeRegion)renderRegionPage(homeRegion);else renderMainHome();}
+
+/* ----- 州いちらん（ホーム） ----- */
+function renderMainHome(){
   const q=dayQ(today()),pct=Math.min(100,q/GOAL*100);
   let week='';
   for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const k=fmtDay(d);
     week+=`<div class="${dayQ(k)>=GOAL?'done':''} ${i===0?'today':''}"><b>${dayQ(k)>=GOAL?'✓':''}</b>${'日月火水木金土'[d.getDay()]}</div>`;}
-  const set=S.set;
   const rows=REGIONS.map(r=>{const p=regionProgress(r);
-    return`<div class="rrow"><span data-a="regionView" data-v="${r}" style="cursor:pointer">${REG_EMOJI[r]} ${r}</span>
+    return`<button class="rrow" data-a="openRegion" data-v="${r}"><span>${REG_EMOJI[r]} ${r}州</span>
       <div class="rbar"><b class="g" style="width:${p.g/p.total*100}%"></b><b class="y" style="width:${p.y/p.total*100}%"></b></div>
-      <span class="n">${p.g}/${p.total}</span><button class="go" data-a="regionGo" data-v="${r}">▶</button></div>`;}).join('');
+      <span class="n">${p.g}/${p.total}</span><span class="go">›</span></button>`;}).join('');
   const weak=avail.filter(c=>isWeak(c.id)).sort((a,b)=>S.stats[b.id].ng-S.stats[a.id].ng);
-  const modeBtn=(m,e,n,s)=>`<button class="${set.mode===m?'on':''}" data-a="mode" data-v="${m}"><span>${e}</span>${n}<small>${s}</small></button>`;
-  const chip=(a,v,cur,label)=>`<button class="${cur===v?'on':''}" data-a="${a}" data-v="${v}">${label}</button>`;
   const gr=greeting();
   $('#panel').innerHTML=masRow(gr[0],gr[1])+installCard()+`
   <section class="card daily">
@@ -722,24 +708,17 @@ function renderHome(){
     <div><b>今日のノルマ</b><small>${q>=GOAL?'達成！えらい🎉 もっとやってレベルアップ':`あと${GOAL-q}問で達成。連続記録をのばそう`}</small></div>
     <div class="week">${week}</div>
     <button class="cta" data-a="daily">${q>=GOAL?'もう1セットやる':'今日の10問をはじめる'}</button>
+    <div class="sub2" style="grid-column:1/-1;margin:2px 0 0">6つの州から、まんべんなく出るよ</div>
   </section>
-  <section class="card"><h3>📝 テスト形式（本番と同じ）</h3>
+  <section class="card"><h3>🗺️ 州ごとに練習</h3>
+    <div class="sub2">州をえらぶと、その州の問題と国の一覧が出るよ。<br>緑＝マスター／黄＝練習中（数字はマスターした国の数）</div>${rows}
+    <div class="lbl" style="margin-top:8px">出題する国</div>${scopeSeg()}</section>
+  <section class="card"><h3>📝 テスト対策（本番と同じ形式）</h3>
     <div class="sub2">白地図の番号にあてはまる国名を、ア〜トの選択肢から選ぶ。テストの範囲は毎回変わるから、世界じゅうの国から出すよ。</div>
-    <div class="lbl">出題する国</div>
-    <div class="seg"><button class="${S.testScope==='all'?'':'on'}" data-a="tscope" data-v="lv1">主要国（テストに出そうな国）</button><button class="${S.testScope==='all'?'on':''}" data-a="tscope" data-v="all">すべての国</button></div>
     <button class="cta" style="margin-top:2px" data-a="mock">模擬テスト（問1＋問2　全14問）</button>
     <div class="duo"><button class="cta sub" data-a="part1">問1だけ<small>アフリカ・ヨーロッパ</small></button><button class="cta sub" data-a="part2">問2だけ<small>南北アメリカ・アジア</small></button></div>
-    <button class="cta sub" style="margin-top:8px" data-a="mixAll">世界ぜんぶミックス（9問）<small style="display:block;font-weight:600;font-size:11px">6大陸から出る。オセアニアも入るよ</small></button>
+    <button class="cta sub" style="margin-top:8px" data-a="mixAll">世界ぜんぶミックス（9問）<small style="display:block;font-weight:600;font-size:11px">6つの州から出る。オセアニアも入るよ</small></button>
     <button class="cta sub" style="margin-top:8px;font-size:13px;padding:10px" data-a="mockPast">過去問どおり（前回の定期テストの範囲）</button>
-  </section>
-  <section class="card"><h3>🗺️ 大陸ごとに練習</h3>
-    <div class="sub2">どの大陸が出るか分からないから、全部の大陸をカバーしよう。<br>▶でその大陸のテスト形式（6問）／大陸名をタップで地図を拡大／緑＝マスター・黄＝練習中</div>${rows}</section>
-  <section class="card"><h3>🎮 自由練習</h3>
-    <div class="modes">${modeBtn('tap','🗺️','地図でさがす','国名→タップ')}${modeBtn('choice','🔤','国名を選ぶ','光る国→4択')}${modeBtn('card','🧠','思い出し','書いて確認')}</div>
-    <div class="lbl">地域</div><div class="seg">${chip('region','all',set.region,'全世界')}${REGIONS.map(r=>chip('region',r,set.region,r)).join('')}</div>
-    <div class="lbl">範囲</div><div class="seg">${chip('scope','all',set.scope,'すべての国')}${chip('scope','lv1',set.scope,'主要国だけ')}${chip('scope','weak',set.scope,`苦手だけ(${weak.length})`)}</div>
-    <div class="lbl">問題数</div><div class="seg">${chip('len','10',String(set.len),'10問')}${chip('len','20',String(set.len),'20問（テスト本番）')}</div>
-    <button class="cta sub" data-a="free">この設定ではじめる</button>
   </section>
   ${weak.length?`<section class="card"><h3>😣 苦手な国</h3><div class="chips">${weak.slice(0,14).map(c=>`<span class="r">${c.name}</span>`).join('')}</div>
     <button class="cta sub" style="margin-top:10px" data-a="weakGo">苦手をつぶす</button></section>`:''}
@@ -748,8 +727,34 @@ function renderHome(){
   <div class="foot">地図をタップすると国名が見られるよ。<br>ブラウザのメニューから「ホーム画面に追加」するとアプリみたいに使えます。<br>
   <button data-a="reset">記録をリセット</button></div>`;
 }
+
+/* ----- 州ページ（その州の練習と国の一覧） ----- */
+function renderRegionPage(r){
+  const p=regionProgress(r);
+  const list=avail.filter(c=>c.region===r);
+  const chipOf=c=>`<button class="m${level(c.id)}" data-a="cinfo" data-v="${c.id}">${c.name}</button>`;
+  const main=list.filter(c=>c.lv===1),rest=list.filter(c=>c.lv!==1);
+  const modeBtn=(a,e,n,sub)=>`<button data-a="${a}"><span>${e}</span>${n}<small>${sub}</small></button>`;
+  $('#panel').innerHTML=`<button class="back" data-a="backHome">← 州いちらん</button>
+    <h2 class="rt">${REG_EMOJI[r]} ${r}州</h2>
+    <div class="sub2" style="margin:0 0 10px">マスターした国　${p.g} / ${p.total}　（${scopeKey()==='lv1'?'主要国':'すべての国'}）</div>
+    <section class="card"><h3>この州を練習する</h3>
+      <div class="lbl">出題する国</div>${scopeSeg()}
+      <div class="modes two">${modeBtn('rTest','📝','テスト形式','番号に国名・6問')}${modeBtn('rChoice','🔤','国名を選ぶ','光る国→4択')}${modeBtn('rTap','🗺️','地図でさがす','国名→タップ')}${modeBtn('rCard','🧠','思い出し','書いて確認')}</div>
+    </section>
+    <section class="card"><h3>この州の国（${list.length}か国）</h3>
+      <div class="sub2">タップすると地図に出るよ。灰＝まだ／赤＝苦手／黄＝練習中／緑＝マスター</div>
+      <div class="lbl">主要国</div><div class="cl">${main.map(chipOf).join('')}</div>
+      ${rest.length?`<div class="lbl" style="margin-top:10px">そのほか</div><div class="cl">${rest.map(chipOf).join('')}</div>`:''}
+    </section>`;
+}
+function startRegion(kind){
+  const r=homeRegion;let sc=scopeKey(),pool=poolFor(r,sc);
+  if(pool.length<4){sc='all';pool=poolFor(r,'all');}
+  newRound(pickN(pool,Math.min(10,pool.length)),kind,{region:r,scope:sc,len:10,kind});
+}
 function showHome(){
-  clearTimeout(autoT);selId=null;testMode=false;go('home');drawMarkers(null);paintHome();setView('all');renderHome();hideRing();
+  clearTimeout(autoT);selId=null;testMode=false;go('home');drawMarkers(null);paintHome();setView(homeRegion||'all');renderHome();hideRing();
 }
 function hideRing(){ringInfo=null;updateRing();}
 
@@ -757,7 +762,7 @@ function hideRing(){ringInfo=null;updateRing();}
 function newRound(list,kind,cfg){
   if(!list.length){toast('出題できる国がないよ。範囲を変えてみてね');return;}
   testMode=false;drawMarkers(null);
-  R={kind,cfg,region:cfg.region,qs:list.map(c=>({c,mode:kind==='mix'?(Math.random()<.5?'tap':'choice'):kind})),
+  R={kind,cfg,region:cfg.region,qs:list.map(c=>{let m=kind==='mix'?(Math.random()<.5?'tap':'choice'):kind;if(m==='tap'&&!tappable(c))m='choice';return{c,mode:m};}),
      i:0,res:[],combo:0,maxCombo:0,xp:0,lv0:lvOf(S.xp)};
   go('quiz');showQ();
 }
@@ -874,7 +879,13 @@ function showResult(){
 /* ============ テスト形式（白地図の番号→選択肢から国名） ============ */
 const CIRC='①②③④⑤⑥⑦⑧⑨⑩';
 const KANA='アイウエオカキクケコサシスセソタチツテト';
-const NOT_TARGET=new Set(['643','702','376']);   // ロシア・シンガポール・イスラエルは番号を打ちにくいので除外
+const NOT_TARGET=new Set(['643','702','376']);
+/* 国土が小さすぎて、スマホの地図では押せない・番号が打てない国は、タップや番号の問題には出さない（4択には出る） */
+const _tap=new Map();
+function tappable(c){
+  if(!_tap.has(c.id)){const f=featById.get(c.id);_tap.set(c.id,!!f&&d3.geoArea(mainPart(f))>2.4e-4);}
+  return _tap.get(c.id);
+}   // ロシア・シンガポール・イスラエルは番号を打ちにくいので除外
 /* 定期テストの選択肢（ア〜ト）そのまま。この順番・この20か国が本番の範囲 */
 const BANK1=['アルジェリア','ナイジェリア','マダガスカル','エジプト','南アフリカ共和国','タンザニア','イギリス','フランス','ドイツ','オーストリア','ノルウェー','ポーランド','フィンランド','スペイン','ポルトガル','ウクライナ','ギリシャ','ルーマニア','オランダ','チェコ'];
 const BANK2=['アルゼンチン','チリ','ブラジル','ベネズエラ','ペルー','コロンビア','アメリカ合衆国','カナダ','メキシコ','キューバ','タイ','中国','イラン','サウジアラビア','インド','インドネシア','モンゴル','イラク','フィリピン','トルコ'];
@@ -892,13 +903,13 @@ function buildPart(spec){
   const targets=[],tid=new Set();
   const fixed=spec.names?spec.names.map(n=>byName.get(n)).filter(c=>c&&availSet.has(c.id)):null;
   for(const [r,n] of spec.regions){
-    let pool=fixed?fixed.filter(c=>c.region===r&&!NOT_TARGET.has(c.id)):poolFor(r,S.testScope==='all'?'all':'lv1').filter(c=>!NOT_TARGET.has(c.id));
-    if(!fixed&&pool.length<n)pool=poolFor(r,'all').filter(c=>!NOT_TARGET.has(c.id));
+    let pool=fixed?fixed.filter(c=>c.region===r&&!NOT_TARGET.has(c.id)&&tappable(c)):poolFor(r,scopeKey()).filter(c=>!NOT_TARGET.has(c.id)&&tappable(c));
+    if(!fixed&&pool.length<n)pool=poolFor(r,'all').filter(c=>!NOT_TARGET.has(c.id)&&tappable(c));
     pickN(pool,n).forEach(c=>{targets.push(c);tid.add(c.id);});
   }
   const regs=spec.regions.map(x=>x[0]);
   const cand=avail.filter(c=>regs.includes(c.region)&&!tid.has(c.id));
-  const extra=(S.testScope==='all'?shuffle(cand):shuffle(cand.filter(c=>c.lv===1)).concat(shuffle(cand.filter(c=>c.lv!==1)))).slice(0,Math.max(0,spec.bank-targets.length));
+  const extra=(scopeKey()==='all'?shuffle(cand):shuffle(cand.filter(c=>c.lv===1)).concat(shuffle(cand.filter(c=>c.lv!==1)))).slice(0,Math.max(0,spec.bank-targets.length));
   const bank=fixed?fixed:shuffle(targets.concat(extra)).sort((a,b)=>regs.indexOf(a.region)-regs.indexOf(b.region));
   return{spec,regs,view:regs[0],active:0,done:false,
     items:targets.map((c,i)=>({n:i+1,c,region:c.region,ans:null,ok:null})),
@@ -1020,19 +1031,18 @@ function startDaily(){
   const cfg={region:'all',scope:'daily',len:GOAL,kind:'mix'};
   newRound(balancedPick(GOAL),'mix',cfg);
 }
-function startFree(){
-  const s=S.set;const pool=poolFor(s.region,s.scope);
-  if(s.scope==='weak'&&!pool.length){toast('苦手な国はまだないよ。まず練習しよう！');return;}
-  newRound(pickN(pool,Math.min(+s.len,pool.length)),s.mode,{region:s.region,scope:s.scope,len:s.len,kind:s.mode});
-}
 const ACT={
   home:()=>showHome(),
   snd:()=>{S.sound=!S.sound;persist();renderTop();if(S.sound)sfx('ok');},
   daily:startDaily,
-  free:startFree,
-  weakGo:()=>{S.set.scope='weak';S.set.region='all';startFree();},
-  regionView:v=>setView(v),
-  regionGo:v=>startTest([{title:v,regions:[[v,6]],bank:20}]),
+  weakGo:()=>newRound(pickN(poolFor('all','weak'),10),'mix',{region:'all',scope:'weak',len:10,kind:'mix'}),
+  openRegion:v=>{homeRegion=v;selId=null;$('#tip').style.display='none';renderHome();paintHome();setView(v);$('#panel').scrollTop=0;},
+  backHome:()=>{homeRegion=null;selId=null;$('#tip').style.display='none';showHome();$('#panel').scrollTop=0;},
+  rTest:()=>startTest([{title:homeRegion+'州',regions:[[homeRegion,6]],bank:20}]),
+  rChoice:()=>startRegion('choice'),
+  rTap:()=>startRegion('tap'),
+  rCard:()=>startRegion('card'),
+  cinfo:v=>{const c=byId.get(v);selId=v;paintHome();const t=$('#tip');t.style.display='block';t.textContent=c.name+'（'+c.region+'州）';moveTo(focusT(featById.get(v)));},
   mock:()=>startTest([PARTS.w1,PARTS.w2]),
   mockPast:()=>startTest([PARTS.p1,PARTS.p2]),
   mixAll:()=>startTest([PARTS.w3]),
@@ -1047,10 +1057,7 @@ const ACT={
   nextPart:()=>{if(T.pi<T.parts.length-1){T.pi++;showPart();}else finishTest();},
   testAgain:()=>startTest(T.specs),
   install:async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();try{await deferredPrompt.userChoice;}catch(e){}deferredPrompt=null;if(screen==='home')renderHome();},
-  hideInstall:()=>{S.hideInstall=true;persist();renderHome();},  mode:v=>{S.set.mode=v;persist();renderHome();},
-  region:v=>{S.set.region=v;persist();renderHome();},
-  scope:v=>{S.set.scope=v;persist();renderHome();},
-  len:v=>{S.set.len=+v;persist();renderHome();},
+  hideInstall:()=>{S.hideInstall=true;persist();renderHome();},
   pick:v=>pickChoice(v),
   reveal:()=>{R.revealed=true;renderQuiz();},
   self:v=>finish(v==='1'),
