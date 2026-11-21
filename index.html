@@ -502,21 +502,6 @@ function poolFor(region,scope){
   if(scope==='weak')l=l.filter(c=>isWeak(c.id));
   return l;
 }
-/* どの大陸が出るか分からないので、大陸練習はその大陸の国をぜんぶ出す */
-function smartPool(region){return poolFor(region,'all');}
-/* 毎日の問題：まず全大陸から1問ずつ、残りは制覇度の低い大陸を多めに */
-function balancedPick(n){
-  const ratio=r=>{const p=regionProgress(r);return p.g/p.total;};
-  const out=[],used=new Set();
-  const take=r=>{let l=poolFor(r,scopeKey()).filter(x=>!used.has(x.id));if(!l.length)l=poolFor(r,'all').filter(x=>!used.has(x.id));const c=pickN(l,1)[0];if(c){used.add(c.id);out.push(c);}};
-  shuffle(REGIONS).slice(0,n).forEach(take);
-  while(out.length<n){
-    const ws=REGIONS.map(r=>Math.max(.15,1.2-ratio(r)));let x=Math.random()*ws.reduce((a,b)=>a+b,0),i=0;
-    for(;i<ws.length-1;i++){x-=ws[i];if(x<=0)break;}
-    const before=out.length;take(REGIONS[i]);if(out.length===before&&used.size>=avail.length)break;
-  }
-  return shuffle(out);
-}
 function scopeKey(){return S.testScope==='all'?'all':'lv1';}
 function regionProgress(r){
   const l=poolFor(r,scopeKey());let g=0,y=0;
@@ -617,13 +602,13 @@ const OK_MSG=['せいかい！天才〜✨','いいね！その調子💕','さ�
 const NG_MSG=['どんまい！次で取り返そ💪','惜しい〜！','ここ間違えやすいんだよね…','だいじょぶ、間違えた分だけ強くなる✨','今ので覚えたでしょ？'];
 function greeting(){
   const h=new Date().getHours(),q=dayQ(today()),st=streak();
-  if(S.total.q===0)return['happy','はじめまして！<b>ちきゅ</b>だよ🌏<br>いっしょに世界の国をおぼえよ〜！まずは「今日の10問」からスタート！'];
+  if(S.total.q===0)return['happy','はじめまして！<b>ちきゅ</b>だよ🌏<br>いっしょに世界の国をおぼえよ〜！まずは好きな州をえらんでスタート！'];
   if(q>=GOAL)return['star','今日のノルマ達成してる！えらすぎ〜✨<br>もっとやる？それとも明日にとっとく？'];
   if(st>=3)return['happy',`${st}日連続中！🔥 今日も途切れさせないでね。あと${GOAL-q}問だよ！`];
   if(h<5)return['normal','夜ふかしさんだ…少しだけやって寝よ🌙'];
-  if(h<11)return['happy','おはよ〜！☀️ 朝の10問いっとく？'];
-  if(h<17)return['normal','おつかれ！放課後に10問どう？📚'];
-  return['happy','今日もおつ〜！寝る前に10問だけやろ🌙'];
+  if(h<11)return['happy','おはよ〜！☀️ 朝のうちに1州やっとく？'];
+  if(h<17)return['normal','おつかれ！放課後に1州やってみない？📚'];
+  return['happy','今日もおつ〜！寝る前に1州だけやろ🌙'];
 }
 
 /* ============ 画面 ============ */
@@ -705,10 +690,8 @@ function renderMainHome(){
   $('#panel').innerHTML=masRow(gr[0],gr[1])+installCard()+`
   <section class="card daily">
     <div class="ringp" style="--p:${pct}"><span>${Math.min(q,GOAL)}/${GOAL}</span></div>
-    <div><b>今日のノルマ</b><small>${q>=GOAL?'達成！えらい🎉 もっとやってレベルアップ':`あと${GOAL-q}問で達成。連続記録をのばそう`}</small></div>
+    <div><b>今日のノルマ　${GOAL}問</b><small>${q>=GOAL?'達成！えらい🎉 もっとやってレベルアップ':`あと${GOAL-q}問。下の州をえらんで練習しよう`}</small></div>
     <div class="week">${week}</div>
-    <button class="cta" data-a="daily">${q>=GOAL?'もう1セットやる':'今日の10問をはじめる'}</button>
-    <div class="sub2" style="grid-column:1/-1;margin:2px 0 0">6つの州から、まんべんなく出るよ</div>
   </section>
   <section class="card"><h3>🗺️ 州ごとに練習</h3>
     <div class="sub2">州をえらぶと、その州の問題と国の一覧が出るよ。<br>緑＝マスター／黄＝練習中（数字はマスターした国の数）</div>${rows}
@@ -1027,14 +1010,9 @@ function finishTest(){
 }
 
 /* ============ 操作 ============ */
-function startDaily(){
-  const cfg={region:'all',scope:'daily',len:GOAL,kind:'mix'};
-  newRound(balancedPick(GOAL),'mix',cfg);
-}
 const ACT={
   home:()=>showHome(),
   snd:()=>{S.sound=!S.sound;persist();renderTop();if(S.sound)sfx('ok');},
-  daily:startDaily,
   weakGo:()=>newRound(pickN(poolFor('all','weak'),10),'mix',{region:'all',scope:'weak',len:10,kind:'mix'}),
   openRegion:v=>{homeRegion=v;selId=null;$('#tip').style.display='none';renderHome();paintHome();setView(v);$('#panel').scrollTop=0;},
   backHome:()=>{homeRegion=null;selId=null;$('#tip').style.display='none';showHome();$('#panel').scrollTop=0;},
@@ -1065,8 +1043,7 @@ const ACT={
   retryMiss:()=>{const m=R.res.filter(x=>!x.ok).map(x=>x.c);newRound(shuffle(m),R.kind,R.cfg);},
   again:()=>{
     const c=R.cfg;
-    if(c.scope==='daily'){startDaily();return;}
-    const pool=c.scope==='daily'?smartPool('all'):c.scope==='smart'?smartPool(c.region):poolFor(c.region,c.scope);
+    const pool=poolFor(c.region,c.scope);
     newRound(pickN(pool,Math.min(+c.len,pool.length)),R.kind,c);
   },
   reset:()=>{if(confirm('これまでの記録（連続日数・レベル・バッジ）をすべて消します。いい？')){S=defaults();persist();showHome();toast('リセットしました');}}
